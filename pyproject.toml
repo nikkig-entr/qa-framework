@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qa-framework"
+version = "0.1.0"
+description = "Senior-level QA Automation Framework (Playwright + pytest)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-xdist>=3.5",
+    "pytest-html>=4.1",
+    "allure-pytest>=2.13",
+    "playwright>=1.42",
+    "httpx>=0.27",
+    "respx>=0.21",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "python-dotenv>=1.0",
+    "structlog>=24.1",
+    "tenacity>=8.2",
+    "faker>=25.0",
+    "sqlalchemy>=2.0",
+    "asyncpg>=0.29",
+    "redis>=5.0",
+    "pytest-rerunfailures>=13.0",
+    "pytest-cov>=5.0",
+    "types-requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.3",
+    "mypy>=1.8",
+    "pre-commit>=3.6",
+    "pytest-mock>=3.12",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "-p no:cacheprovider",
+    "--tb=short",
+]
+markers = [
+    "ui: UI tests (Playwright)",
+    "api: API tests (httpx)",
+    "db: Database tests",
+    "slow: Slow running tests",
+    "flaky: Known flaky tests",
+    "contract: Contract tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.pytest-xdist]
+dist = "loadfile"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "I", "UP", "W", "C4", "C9", "T20", "PTH", "ERA", "PT", "Q"]
+ignore = ["E501", "T201"]
+fixable = ["F", "I", "UP", "C4", "C9", "T20", "PTH", "ERA", "PT", "Q"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+ignore_missing_imports = true
+
+[tool.playwright]
+browsers = ["chromium", "firefox", "webkit"]

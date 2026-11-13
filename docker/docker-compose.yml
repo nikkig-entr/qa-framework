@@ -1,0 +1,102 @@
+version: "3.9"
+
+services:
+  # Main test runner
+  qa-framework:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../:/app
+      - ../screenshots:/app/screenshots
+      - ../reports:/app/reports
+      - ../allure-results:/app/allure-results
+    environment:
+      - TEST_PARALLEL_WORKERS=4
+      - TEST_RERUNS=2
+      - BROWSER_HEADLESS=true
+      - API_BASE_URL=https://jsonplaceholder.typicode.com
+    command: >
+      pytest tests
+      -v --tb=short -n auto
+      --html=reports/report.html --self-contained-html
+      --alluredir=allure-results
+    profiles: ["test", "all"]
+
+  # Interactive development container
+  qa-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../:/app
+      - ../screenshots:/app/screenshots
+      - ../reports:/app/reports
+    environment:
+      - TEST_PARALLEL_WORKERS=0
+      - BROWSER_HEADLESS=false
+      - BROWSER_SLOW_MO=100
+      - LOG_LEVEL=DEBUG
+    command: sleep infinity
+    profiles: ["dev"]
+    stdin_open: true
+    tty: true
+
+  # PostgreSQL for database tests
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles: ["db", "all"]
+
+  # Redis for caching/session tests
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles: ["db", "all"]
+
+  # Allure report server
+  allure:
+    image: frankescobar/allure-docker-service:latest
+    ports:
+      - "5050:5050"
+    volumes:
+      - ../allure-results:/app/allure-results
+      - ../allure-report:/app/allure-report
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 10
+      KEEP_HISTORY: 20
+    profiles: ["report", "all"]
+
+  # Mock API server for contract testing
+  mock-api:
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../tests/contract/mocks:/home/wiremock/mappings
+    command: --verbose --global-response-templating
+    profiles: ["contract", "all"]
+
+volumes:
+  postgres_data:
+  redis_data:
