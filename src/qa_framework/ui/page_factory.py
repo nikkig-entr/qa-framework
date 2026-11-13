@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class PageFactory:
     """Factory for creating and caching Page Object instances."""
 
-    def __init__(self, page: Page, settings: "Settings | None" = None) -> None:
+    def __init__(self, page: Page, settings: Settings | None = None) -> None:
         self._page = page
         self._settings = settings
         self._cache: dict[type[BasePage], BasePage] = {}
@@ -39,5 +39,7 @@ class PageFactory:
         return self._page
 
     @property
-    def settings(self) -> "Settings | None":
+    def settings(self) -> Settings | None:
         return self._settings
+
+

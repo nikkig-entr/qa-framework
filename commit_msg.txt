@@ -1,0 +1,14 @@
+fix: resolve all mypy and ruff errors
+
+- Fix trailing newlines in all files
+- Fix import sorting (I001)
+- Fix undefined name 'Any' in db/session.py
+- Fix get_logger return type in logging.py
+- Fix BasePage type annotations (get_by_role, expect_title, cookies, localStorage)
+- Fix APIClient generic type parameters and convenience methods
+- Fix respx mock context manager type
+- Remove unused imports
+- Fix parametrize tuple syntax
+
+All lint (ruff) and type (mypy) checks pass.
+All 38 tests pass locally.

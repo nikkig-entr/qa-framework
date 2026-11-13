@@ -1,7 +1,8 @@
 """Contract tests - schema validation."""
 
 import pytest
-from qa_framework.api.models import User, Post, Comment, Album, Photo, Todo, ErrorResponse
+
+from qa_framework.api.models import Album, Comment, Photo, Post, Todo, User
 
 
 @pytest.mark.contract
@@ -108,3 +109,5 @@ class TestResponseHeaders:
         response = await api_client.get("/users/1")
         # JSONPlaceholder doesn't have CORS, but check pattern
         assert response.status_code == 200
+
+

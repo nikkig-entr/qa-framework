@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any
 
 from faker import Faker
@@ -88,3 +87,5 @@ def generate_users(count: int) -> list[dict[str, Any]]:
 def generate_posts(count: int, user_id: int = 1) -> list[dict[str, Any]]:
     """Generate multiple posts."""
     return [PostFactory(user_id=user_id).to_dict() for _ in range(count)]
+
+

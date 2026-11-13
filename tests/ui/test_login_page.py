@@ -1,6 +1,7 @@
 """Login page UI tests."""
 
 import pytest
+
 from qa_framework.ui.pages import LoginPage
 
 
@@ -39,7 +40,7 @@ class TestLoginPage:
         await login_page.logout()
         await login_page.assert_logged_out()
 
-    @pytest.mark.parametrize("username,password,expected_message", [
+    @pytest.mark.parametrize(("username", "password", "expected_message"), [
         ("", "SuperSecretPassword!", "Your username is invalid!"),
         ("tomsmith", "", "Your password is invalid!"),
         ("", "", "Your username is invalid!"),
@@ -50,3 +51,5 @@ class TestLoginPage:
         await login_page.navigate()
         await login_page.login(username, password)
         await login_page.assert_login_failure(expected_message)
+
+

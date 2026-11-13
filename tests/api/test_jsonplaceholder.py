@@ -1,7 +1,8 @@
 """API tests for JSONPlaceholder."""
 
 import pytest
-from qa_framework.api.models import User, Post, Comment, Album, Photo, Todo
+
+from qa_framework.api.models import Album, Comment, Photo, Post, Todo, User
 
 
 @pytest.mark.api
@@ -170,3 +171,5 @@ class TestCreateOperations:
         assert response.data is not None
         assert response.data.post_id == 1
         assert response.data.name == "Test Comment"
+
+

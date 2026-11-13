@@ -10,9 +10,10 @@ import httpx
 import respx
 from pydantic import BaseModel, ValidationError
 from tenacity import retry, stop_after_attempt, wait_exponential
+from typing_extensions import AsyncGenerator
 
 from ..config import get_settings
-from ..logging import get_logger, LogContext
+from ..logging import LogContext, get_logger
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -42,7 +43,7 @@ class APIResponse(BaseModel, Generic[T]):
         return 500 <= self.status_code < 600
 
 
-class APIClient:
+class APIClient(Generic[T]):
     """Async HTTP client with built-in retry, validation, and logging."""
 
     def __init__(
@@ -84,23 +85,23 @@ class APIClient:
             await self._client.aclose()
             self._client = None
 
-    async def __aenter__(self) -> "APIClient":
+    async def __aenter__(self) -> APIClient[Any]:
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         await self.close()
 
     @asynccontextmanager
-    async def mock(self) -> respx.MockRouter:
+    async def mock(self) -> AsyncGenerator[respx.MockRouter, None]:
         """Context manager for mocking HTTP requests with respx."""
         with respx.mock(base_url=self._base_url, assert_all_called=False) as router:
             yield router
 
     def _build_response(self, response: httpx.Response, model: type[T] | None = None) -> APIResponse[T]:
         elapsed = response.elapsed.total_seconds() * 1000
-        raw_data = None
-        data = None
-        error = None
+        raw_data: Any = None
+        data: T | list[Any] | None = None
+        error: str | None = None
 
         try:
             raw_data = response.json()
@@ -184,23 +185,25 @@ class APIClient:
         return result
 
     # Convenience methods
-    async def get(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def get(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("GET", path, **kwargs)
 
-    async def post(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def post(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("POST", path, **kwargs)
 
-    async def put(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def put(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("PUT", path, **kwargs)
 
-    async def patch(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def patch(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("PATCH", path, **kwargs)
 
-    async def delete(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def delete(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("DELETE", path, **kwargs)
 
-    async def head(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def head(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("HEAD", path, **kwargs)
 
-    async def options(self, path: str, **kwargs: Any) -> APIResponse[T]:
+    async def options(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("OPTIONS", path, **kwargs)
+
+

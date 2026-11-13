@@ -1,12 +1,13 @@
 """Database integration tests."""
 
-import pytest
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from qa_framework.db.session import DatabaseManager, Base
+import pytest
+from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column
+
 from qa_framework.db.repository import BaseRepository
+from qa_framework.db.session import Base
 
 
 class TestModel(Base):
@@ -135,3 +136,5 @@ class TestDatabase:
 
         not_found = await repo.find_one(name="NonExistent")
         assert not_found is None
+
+

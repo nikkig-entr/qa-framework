@@ -49,3 +49,5 @@ class DemoPage(BasePage):
         count = await self.available_examples.count()
         assert count >= min_count, f"Expected at least {min_count} examples, got {count}"
         return self
+
+

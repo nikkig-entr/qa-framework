@@ -2,6 +2,7 @@
 
 import logging
 import sys
+from datetime import UTC
 from typing import Any
 
 import structlog
@@ -18,9 +19,9 @@ def add_log_level(logger: WrappedLogger, method_name: str, event_dict: EventDict
 
 def add_timestamp(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
     """Add ISO timestamp to event dict."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    event_dict["timestamp"] = datetime.now(timezone.utc).isoformat()
+    event_dict["timestamp"] = datetime.now(UTC).isoformat()
     return event_dict
 
 
@@ -79,7 +80,7 @@ def configure_logging() -> None:
 
 def get_logger(name: str | None = None) -> structlog.stdlib.BoundLogger:
     """Get a structured logger instance."""
-    return structlog.get_logger(name)
+    return structlog.get_logger(name)  # type: ignore
 
 
 class LogContext:
@@ -87,11 +88,11 @@ class LogContext:
 
     def __init__(self, **kwargs: Any) -> None:
         self.kwargs = kwargs
-        self.tokens: list[dict] = []
+        self.tokens: list[dict[str, Any]] = []
 
     def __enter__(self) -> "LogContext":
         token = structlog.contextvars.bind_contextvars(**self.kwargs)
-        self.tokens.append(token)
+        self.tokens.append(dict(token))  # Convert Mapping to dict
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
@@ -102,3 +103,5 @@ class LogContext:
 
 # Initialize on import
 configure_logging()
+
+

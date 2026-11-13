@@ -4,18 +4,17 @@ from __future__ import annotations
 
 import asyncio
 import os
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import AsyncGenerator, Generator
 
 import pytest
-import pytest_asyncio
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 
-from qa_framework.config import get_settings
 from qa_framework.api.client import APIClient
+from qa_framework.config import get_settings
 from qa_framework.db.session import DatabaseManager, close_db_manager
-from qa_framework.ui.page_factory import PageFactory
 from qa_framework.logging import get_logger
+from qa_framework.ui.page_factory import PageFactory
 
 logger = get_logger(__name__)
 
@@ -71,7 +70,7 @@ async def playwright(playwright_instance):
         yield p
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 async def browser(playwright, settings) -> AsyncGenerator[Browser, None]:
     """Browser instance - function scoped for xdist compatibility."""
     browser = await playwright[settings.browser.name].launch(
@@ -197,3 +196,5 @@ async def cleanup():
     """Session cleanup."""
     yield
     await close_db_manager()
+
+

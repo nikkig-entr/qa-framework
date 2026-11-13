@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any, Generic, TypeVar
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 
@@ -125,3 +125,5 @@ class BaseRepository(Generic[T]):
         if entity is None:
             raise ValueError(f"{self._model.__name__} not found with filters: {filters}")
         return entity
+
+

@@ -96,3 +96,5 @@ class Todo(BaseSchema):
     user_id: int = Field(alias="userId")
     title: str
     completed: bool
+
+

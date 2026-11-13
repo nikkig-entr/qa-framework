@@ -5,21 +5,22 @@ from __future__ import annotations
 import time
 from abc import ABC
 from pathlib import Path
+from re import Pattern
 from typing import TYPE_CHECKING, Any, Literal
 
 from playwright.async_api import (
-    BrowserContext,
-    ElementHandle,
     FrameLocator,
     Locator,
     Page,
-    TimeoutError as PlaywrightTimeoutError,
     expect,
+)
+from playwright.async_api import (
+    TimeoutError as PlaywrightTimeoutError,
 )
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from ..config import get_settings
-from ..logging import get_logger, LogContext
+from ..logging import LogContext, get_logger
 
 if TYPE_CHECKING:
     from .page_factory import PageFactory
@@ -33,7 +34,7 @@ class BasePage(ABC):
     url_path: str = ""
     page_title: str | None = None
 
-    def __init__(self, page: Page, page_factory: "PageFactory | None" = None) -> None:
+    def __init__(self, page: Page, page_factory: PageFactory | None = None) -> None:
         self.page = page
         self.page_factory = page_factory
         self._settings = get_settings()
@@ -74,7 +75,94 @@ class BasePage(ABC):
         """Create a locator with default options."""
         return self.page.locator(selector, **kwargs)
 
-    def get_by_role(self, role: str, **kwargs: Any) -> Locator:
+    def get_by_role(
+        self,
+        role: Literal[
+            "alert",
+            "alertdialog",
+            "application",
+            "article",
+            "banner",
+            "blockquote",
+            "button",
+            "caption",
+            "cell",
+            "checkbox",
+            "code",
+            "columnheader",
+            "combobox",
+            "complementary",
+            "contentinfo",
+            "definition",
+            "deletion",
+            "dialog",
+            "directory",
+            "document",
+            "emphasis",
+            "feed",
+            "figure",
+            "form",
+            "generic",
+            "grid",
+            "gridcell",
+            "group",
+            "heading",
+            "img",
+            "insertion",
+            "link",
+            "list",
+            "listbox",
+            "listitem",
+            "log",
+            "main",
+            "marquee",
+            "math",
+            "menu",
+            "menubar",
+            "menuitem",
+            "menuitemcheckbox",
+            "menuitemradio",
+            "meter",
+            "navigation",
+            "none",
+            "note",
+            "option",
+            "paragraph",
+            "presentation",
+            "progressbar",
+            "radio",
+            "radiogroup",
+            "region",
+            "row",
+            "rowgroup",
+            "rowheader",
+            "scrollbar",
+            "search",
+            "searchbox",
+            "separator",
+            "slider",
+            "spinbutton",
+            "status",
+            "strong",
+            "subscript",
+            "superscript",
+            "switch",
+            "tab",
+            "table",
+            "tablist",
+            "tabpanel",
+            "term",
+            "textbox",
+            "time",
+            "timer",
+            "toolbar",
+            "tooltip",
+            "tree",
+            "treegrid",
+            "treeitem",
+        ],
+        **kwargs: Any,
+    ) -> Locator:
         return self.page.get_by_role(role, **kwargs)
 
     def get_by_text(self, text: str, **kwargs: Any) -> Locator:
@@ -194,7 +282,7 @@ class BasePage(ABC):
         """Assert current URL matches pattern."""
         await expect(self.page).to_have_url(pattern, timeout=timeout)
 
-    async def expect_title(self, title: str | list[str], timeout: int = 5_000) -> None:
+    async def expect_title(self, title: str | Pattern[str], timeout: int = 5_000) -> None:
         """Assert page title."""
         await expect(self.page).to_have_title(title, timeout=timeout)
 
@@ -240,7 +328,7 @@ class BasePage(ABC):
         """Wait for JavaScript expression to return truthy."""
         return await self.page.wait_for_function(expression, timeout=timeout)
 
-    async def wait_for_response(self, url_pattern: str, timeout: int = 30_000):
+    async def wait_for_response(self, url_pattern: str, timeout: int = 30_000) -> Any:
         """Wait for network response matching pattern."""
         async with self.page.expect_response(url_pattern) as response_info:
             response = await response_info.value
@@ -258,25 +346,29 @@ class BasePage(ABC):
 
     # --- Cookie / Storage ---
 
-    async def get_cookies(self) -> list[dict]:
-        return await self.page.context.cookies()
+    async def get_cookies(self) -> list[dict[str, Any]]:
+        cookies = await self.page.context.cookies()
+        return [dict(c) for c in cookies]
 
-    async def set_cookies(self, cookies: list[dict]) -> None:
-        await self.page.context.add_cookies(cookies)
+    async def set_cookies(self, cookies: list[dict[str, Any]]) -> None:
+        await self.page.context.add_cookies(cookies)  # type: ignore[arg-type]
 
     async def clear_cookies(self) -> None:
         await self.page.context.clear_cookies()
 
-    async def get_local_storage(self) -> dict:
-        return await self.page.evaluate("() => Object.assign({}, localStorage)")
+    async def get_local_storage(self) -> dict[str, Any]:
+        result = await self.page.evaluate("() => Object.assign({}, localStorage)")
+        return dict(result)
 
-    async def set_local_storage(self, data: dict) -> None:
+    async def set_local_storage(self, data: dict[str, Any]) -> None:
         await self.page.evaluate("(data) => Object.assign(localStorage, data)", data)
 
     # --- Page Factory integration ---
 
-    def get_page(self, page_class: type["BasePage"]) -> "BasePage":
+    def get_page(self, page_class: type[BasePage]) -> BasePage:
         """Get another page instance via factory."""
         if self.page_factory:
             return self.page_factory.get(page_class)
         raise RuntimeError("PageFactory not available")
+
+
