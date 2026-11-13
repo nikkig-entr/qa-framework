@@ -40,16 +40,19 @@ class TestLoginPage:
         await login_page.logout()
         await login_page.assert_logged_out()
 
-    @pytest.mark.parametrize(("username", "password", "expected_message"), [
-        ("", "SuperSecretPassword!", "Your username is invalid!"),
-        ("tomsmith", "", "Your password is invalid!"),
-        ("", "", "Your username is invalid!"),
-    ])
-    async def test_empty_credentials(self, page, page_factory, username, password, expected_message):
+    @pytest.mark.parametrize(
+        ("username", "password", "expected_message"),
+        [
+            ("", "SuperSecretPassword!", "Your username is invalid!"),
+            ("tomsmith", "", "Your password is invalid!"),
+            ("", "", "Your username is invalid!"),
+        ],
+    )
+    async def test_empty_credentials(
+        self, page, page_factory, username, password, expected_message
+    ):
         """Test login with empty credentials."""
         login_page = page_factory.get(LoginPage)
         await login_page.navigate()
         await login_page.login(username, password)
         await login_page.assert_login_failure(expected_message)
-
-

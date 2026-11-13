@@ -41,5 +41,3 @@ class PageFactory:
     @property
     def settings(self) -> Settings | None:
         return self._settings
-
-

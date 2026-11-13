@@ -34,6 +34,6 @@ class TestDemoPage:
         demo_page = page_factory.get(DemoPage)
         await demo_page.navigate()
         await demo_page.expect_visible(demo_page.footer_link)
-        await demo_page.expect_attribute(demo_page.footer_link, "href", "https://elementalselenium.com/")
-
-
+        await demo_page.expect_attribute(
+            demo_page.footer_link, "href", "https://elementalselenium.com/"
+        )

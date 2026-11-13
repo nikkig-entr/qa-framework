@@ -86,7 +86,10 @@ async def browser(playwright, settings) -> AsyncGenerator[Browser, None]:
 async def context(browser, settings) -> AsyncGenerator[BrowserContext, None]:
     """Browser context with configured viewport."""
     context = await browser.new_context(
-        viewport={"width": settings.browser.viewport_width, "height": settings.browser.viewport_height},
+        viewport={
+            "width": settings.browser.viewport_width,
+            "height": settings.browser.viewport_height,
+        },
         locale=settings.browser.locale,
         timezone_id=settings.browser.timezone_id,
         permissions=settings.browser.permissions or None,
@@ -196,5 +199,3 @@ async def cleanup():
     """Session cleanup."""
     yield
     await close_db_manager()
-
-

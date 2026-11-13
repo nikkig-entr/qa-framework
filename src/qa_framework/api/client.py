@@ -97,7 +97,9 @@ class APIClient(Generic[T]):
         with respx.mock(base_url=self._base_url, assert_all_called=False) as router:
             yield router
 
-    def _build_response(self, response: httpx.Response, model: type[T] | None = None) -> APIResponse[T]:
+    def _build_response(
+        self, response: httpx.Response, model: type[T] | None = None
+    ) -> APIResponse[T]:
         elapsed = response.elapsed.total_seconds() * 1000
         raw_data: Any = None
         data: T | list[Any] | None = None
@@ -205,5 +207,3 @@ class APIClient(Generic[T]):
 
     async def options(self, path: str, **kwargs: Any) -> APIResponse[Any]:
         return await self.request("OPTIONS", path, **kwargs)
-
-

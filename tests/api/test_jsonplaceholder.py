@@ -166,10 +166,10 @@ class TestCreateOperations:
             "email": "test@example.com",
             "body": "This is a test comment",
         }
-        response = await api_client.post("/comments", json=new_comment, model=Comment, expected_status=201)
+        response = await api_client.post(
+            "/comments", json=new_comment, model=Comment, expected_status=201
+        )
         assert response.is_success
         assert response.data is not None
         assert response.data.post_id == 1
         assert response.data.name == "Test Comment"
-
-

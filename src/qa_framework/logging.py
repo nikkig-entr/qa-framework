@@ -25,7 +25,9 @@ def add_timestamp(logger: WrappedLogger, method_name: str, event_dict: EventDict
     return event_dict
 
 
-def drop_color_message_key(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
+def drop_color_message_key(
+    logger: WrappedLogger, method_name: str, event_dict: EventDict
+) -> EventDict:
     """Remove color_message key if present."""
     event_dict.pop("color_message", None)
     return event_dict
@@ -103,5 +105,3 @@ class LogContext:
 
 # Initialize on import
 configure_logging()
-
-

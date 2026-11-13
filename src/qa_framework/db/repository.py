@@ -125,5 +125,3 @@ class BaseRepository(Generic[T]):
         if entity is None:
             raise ValueError(f"{self._model.__name__} not found with filters: {filters}")
         return entity
-
-

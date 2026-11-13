@@ -50,7 +50,9 @@ class BasePage(ABC):
         path = self.url_path.lstrip("/")
         return f"{base}/{path}" if path else base
 
-    async def navigate(self, wait_until: Literal["load", "domcontentloaded", "networkidle"] = "networkidle") -> None:
+    async def navigate(
+        self, wait_until: Literal["load", "domcontentloaded", "networkidle"] = "networkidle"
+    ) -> None:
         """Navigate to page URL."""
         with LogContext(url=self.full_url):
             self._log.info("Navigating to page")
@@ -207,7 +209,9 @@ class BasePage(ABC):
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await loc.hover(**kwargs)
 
-    async def select_option(self, locator: Locator | str, value: str | list[str], **kwargs: Any) -> None:
+    async def select_option(
+        self, locator: Locator | str, value: str | list[str], **kwargs: Any
+    ) -> None:
         """Select option(s) from dropdown."""
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await loc.select_option(value, **kwargs)
@@ -254,25 +258,33 @@ class BasePage(ABC):
         await expect(loc).to_have_text(text, timeout=timeout)
         return loc
 
-    async def expect_contains_text(self, locator: Locator | str, text: str, timeout: int = 5_000) -> Locator:
+    async def expect_contains_text(
+        self, locator: Locator | str, text: str, timeout: int = 5_000
+    ) -> Locator:
         """Assert element contains text."""
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await expect(loc).to_contain_text(text, timeout=timeout)
         return loc
 
-    async def expect_value(self, locator: Locator | str, value: str, timeout: int = 5_000) -> Locator:
+    async def expect_value(
+        self, locator: Locator | str, value: str, timeout: int = 5_000
+    ) -> Locator:
         """Assert input has value."""
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await expect(loc).to_have_value(value, timeout=timeout)
         return loc
 
-    async def expect_attribute(self, locator: Locator | str, name: str, value: str, timeout: int = 5_000) -> Locator:
+    async def expect_attribute(
+        self, locator: Locator | str, name: str, value: str, timeout: int = 5_000
+    ) -> Locator:
         """Assert element has attribute."""
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await expect(loc).to_have_attribute(name, value, timeout=timeout)
         return loc
 
-    async def expect_count(self, locator: Locator | str, count: int, timeout: int = 5_000) -> Locator:
+    async def expect_count(
+        self, locator: Locator | str, count: int, timeout: int = 5_000
+    ) -> Locator:
         """Assert element count."""
         loc = self.locator(locator) if isinstance(locator, str) else locator
         await expect(loc).to_have_count(count, timeout=timeout)
@@ -318,7 +330,12 @@ class BasePage(ABC):
 
     # --- Wait helpers ---
 
-    async def wait_for_selector(self, selector: str, state: Literal["attached", "detached", "visible", "hidden"] = "visible", timeout: int = 30_000) -> Locator:
+    async def wait_for_selector(
+        self,
+        selector: str,
+        state: Literal["attached", "detached", "visible", "hidden"] = "visible",
+        timeout: int = 30_000,
+    ) -> Locator:
         """Wait for selector to reach state."""
         loc = self.page.locator(selector)
         await loc.wait_for(state=state, timeout=timeout)
@@ -370,5 +387,3 @@ class BasePage(ABC):
         if self.page_factory:
             return self.page_factory.get(page_class)
         raise RuntimeError("PageFactory not available")
-
-

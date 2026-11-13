@@ -109,5 +109,3 @@ class TestResponseHeaders:
         response = await api_client.get("/users/1")
         # JSONPlaceholder doesn't have CORS, but check pattern
         assert response.status_code == 200
-
-

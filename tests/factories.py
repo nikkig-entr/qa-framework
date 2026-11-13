@@ -20,17 +20,21 @@ class UserFactory:
     first_name: str = field(default_factory=lambda: fake.first_name())
     last_name: str = field(default_factory=lambda: fake.last_name())
     phone: str = field(default_factory=lambda: fake.phone_number())
-    address: dict[str, Any] = field(default_factory=lambda: {
-        "street": fake.street_address(),
-        "city": fake.city(),
-        "zipcode": fake.zipcode(),
-        "geo": {"lat": fake.latitude(), "lng": fake.longitude()},
-    })
-    company: dict[str, Any] = field(default_factory=lambda: {
-        "name": fake.company(),
-        "catch_phrase": fake.catch_phrase(),
-        "bs": fake.bs(),
-    })
+    address: dict[str, Any] = field(
+        default_factory=lambda: {
+            "street": fake.street_address(),
+            "city": fake.city(),
+            "zipcode": fake.zipcode(),
+            "geo": {"lat": fake.latitude(), "lng": fake.longitude()},
+        }
+    )
+    company: dict[str, Any] = field(
+        default_factory=lambda: {
+            "name": fake.company(),
+            "catch_phrase": fake.catch_phrase(),
+            "bs": fake.bs(),
+        }
+    )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -87,5 +91,3 @@ def generate_users(count: int) -> list[dict[str, Any]]:
 def generate_posts(count: int, user_id: int = 1) -> list[dict[str, Any]]:
     """Generate multiple posts."""
     return [PostFactory(user_id=user_id).to_dict() for _ in range(count)]
-
-

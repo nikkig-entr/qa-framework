@@ -68,5 +68,3 @@ class LoginPage(BasePage):
         await self.expect_contains_text(self.flash_message, "You logged out of the secure area!")
         await self.expect_visible(self.login_button)
         return self
-
-

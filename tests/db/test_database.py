@@ -136,5 +136,3 @@ class TestDatabase:
 
         not_found = await repo.find_one(name="NonExistent")
         assert not_found is None
-
-

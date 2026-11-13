@@ -22,6 +22,7 @@ logger = get_logger(__name__)
 
 class Base(DeclarativeBase):
     """Base class for SQLAlchemy models."""
+
     pass
 
 
@@ -113,5 +114,3 @@ async def close_db_manager() -> None:
     if _db_manager:
         await _db_manager.close()
         _db_manager = None
-
-
