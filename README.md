@@ -3,11 +3,10 @@
 [![CI](https://github.com/nikkig-entr/qa-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/nikkig-entr/qa-framework/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11+-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Allure Report](https://img.shields.io/badge/Allure%20Report-live-brightgreen)](https://nikkig-entr.github.io/qa-framework/)
 
 Senior-level test automation framework built with **Playwright**, **pytest**, **httpx**, and **SQLAlchemy**. Designed for scalable, maintainable, and reliable test automation.
 
-**📊 Live Allure Report:** https://nikkig-entr.github.io/qa-framework/
+**📊 Allure Report:** Available as CI artifact (enable GitHub Pages for live view)
 
 ## Features
 
